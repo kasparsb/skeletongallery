@@ -1,6 +1,3 @@
-console.log(window.webit);
-
-
 var V = new window.webit.skeletonGallery.viewer(
     // Viewer props
     {
