@@ -1,6 +1,22 @@
 {
-  "version": "0.0.1",
-  "private": true,
+  "name": "skeletongallery",
+  "version": "0.2.4",
+  "description": "Markup free media viewer",
+  "main": "js/main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kasparsb/skeletongallery.git"
+  },
+  "keywords": [
+    "gallery",
+    "viewer",
+    "utility"
+  ],
+  "author": "Kaspars Bulins (kasparsb@hotmail.com)",
+  "license": "GPL",
+  "bugs": {
+    "url": "https://github.com/kasparsb/skeletongallery/issues"
+  }
   "devDependencies": {
     "gulp": "^3.8.8",
     "gulp-rename": "^1.2.2",
