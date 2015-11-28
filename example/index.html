@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="lv-LV">
+<head>
+	<meta charset="UTF-8" />
+	<style>
+		body {
+			padding: 0;
+			margin: 0;
+		}
+		#g {
+			width: 50%;
+			height: 500px;
+			margin: 0 auto;
+			border: 1px solid green;
+		}
+		.slide {
+			background-repeat: no-repeat;
+			background-position: center center;
+		}
+		.slide-loading {
+			background-image: url('ajax-loader.gif');
+		}
+
+		.slide-0 {
+			background-color: pink;
+			position: relative;
+		}
+		.slide-1 {
+			background-color: green;
+			position: relative;
+		}
+		.slide-2 {
+			background-color: red;
+		}
+
+
+		.slide-0:after {
+			content: '0';
+			position: absolute;
+			top: 10px;
+			left: 10px;
+			font-size: 36px
+		}
+		.slide-1:after {
+			content: '1';
+			position: absolute;
+			top: 10px;
+			left: 10px;
+			font-size: 36px
+		}
+	</style>
+</head>
+<body>
+
+	<div id="t"></div>
+	<div id="g"></div>
+	<a href="">Reload</a>
+	<a id="gprev" href="">Prev</a>
+	<a id="gnext" href="">Next</a>
+	
+	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+	<script src="../build/skeletongallery.min-0.0.1.js"></script>
+	
+	<script src="./app.js"></script>
+</body>
+</html>
