@@ -16,7 +16,7 @@
   "license": "GPL",
   "bugs": {
     "url": "https://github.com/kasparsb/skeletongallery/issues"
-  }
+  },
   "devDependencies": {
     "gulp": "^3.8.8",
     "gulp-rename": "^1.2.2",
