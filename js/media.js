@@ -82,37 +82,23 @@ var media = _.extend({
 	/**
 	 * Liekam media elementu DOMā un uzstādām platumu, augstumu, lai
 	 * media elements ieņem savu izmēru
+	 * Dimensions: object with properties: width, height, maxWidth, maxHeight, minWith, minHeight
 	 */
-	mount: function(target, width, height, maxWidth, maxHeight) {
+	mount: function(target, dimensions) {
 		if (!this.mounted) {
 			_.append(target, this.el);
 			this.mounted = true;
 		}
-		this.setDimensions(width, height, maxWidth, maxHeight);
+		this.setDimensions(dimensions);
 	},
 
 	/**
 	 * Uzstādām media elementa platumu un augstumu
 	 * Katrs media elements var pārrakstīt šo metodi pēc savām vajadzībām
-	 * Pēc noklusējuma tiek uzstādīts css: {width, height, maxWidth, maxHeight}
+	 * Pēc noklusējuma tiek uzstādīts css: {width, height, maxWidth, maxHeight, minWidth, minHeight}
 	 */
-	setDimensions: function(width, height, maxWidth, maxHeight) {
-
-		/**
-		 * !! Sizing method
-		 * fit - media iekļaujas atvēlētajā rāmī
-		 *   width, height - empty
-		 *   maxWidth, maxHeight: 100%
-		 * cover - media pārklāj atvēlēto rādmi
-		 */
-
-		var css = {
-			width: width,
-			height: height,
-			maxWidth: maxWidth,
-			maxHeight: maxHeight
-		}
-		_.css(this.el, css);
+	setDimensions: function(dimensions) {
+		_.css(this.el, dimensions);
 
 		this.readRealDimensions();
 	},

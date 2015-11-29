@@ -3,6 +3,11 @@ var events = require('./events');
 var slide = require('./slide');
 var mediaImage = require('./media-image');
 
+/**
+ * Viewer vajadzīgs, lai
+ * 1) Nolasītu no viewer props slideDefault parametrus
+ * 2) Klausītos viewer change eventu
+ */
 var slides = function(items, viewer) {
 	this.preloadThreshold = 2;
 	this.active = false;

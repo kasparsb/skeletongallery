@@ -4,7 +4,7 @@ var mediaImage = require('./media-image');
 
 /**
  * Izveidjot slide, tas pēc noklusējuma nesāk lādēt atbilstošo media
- * Lai sāktu ielādēt media, ir jāizsauc loadMedia un jāklausās load events
+ * Lai sāktu ielādēt media, ir jāizsauc this.media.load un jāklausās load events
  */
 var slide = function(props){
 	this.name = 'slide';
@@ -20,6 +20,9 @@ var slide = function(props){
 		height: 'auto',
 		maxWidth: '',
 		maxHeight: '',
+		minWidth: '',
+		minHeight: '',
+		size: '',
 		// Media alignment
 		verticalAlign: 'top',
 		horizontalAlign: 'center'
@@ -33,6 +36,7 @@ var slide = function(props){
 	this.media = new mediaImage({
 		src: this.props.src
 	});
+
 	// Saglabājam referenci uz slide
 	this.media.slide = this;
 
@@ -79,24 +83,18 @@ slide.prototype = _.extend({
 
 		// Media ir ielādējies, tagad varam montēt
 		this.media.on('load', _.bind(function(){
-			
 			/**
 			 * mountCallback, kurš jāizpilda, kad media ielādēts
 			 * tas tiek uzstādits, kad slide tiek iemontēts
 			 * skatīt this.mount
 			 */
-			if (typeof this.mountMediaLoadCallback == 'function') {
-				this.mountMediaLoadCallback();
+			if (this.media.isLoaded()) {
+				if (typeof this.mountMediaLoadCallback == 'function') {
+					this.mountMediaLoadCallback();
+				}
 			}
 
-		}, this));		
-	},
-
-	/**
-	 * Veicam media elementa ielādēšanu
-	 */
-	loadMedia: function() {
-		this.media.load();
+		}, this));
 	},
 
 	/**
@@ -153,14 +151,10 @@ slide.prototype = _.extend({
 		if (this.mounted) {
 			
 			var actualMounting = _.bind(function(){
-
 				// Montējot media padodam izmērus
 				this.media.mount(
 					this.el,
-					this.props.width,
-					this.props.height,
-					this.props.maxWidth,
-					this.props.maxHeight
+					this.getMediaDimensionsProperties()
 				);
 
 				this.beforeAlignMedia(alignDone);
@@ -249,12 +243,7 @@ slide.prototype = _.extend({
 	 */
 	resize: function() {
 		// Uzstādām izmērus
-		this.media.setDimensions(
-			this.props.width,
-			this.props.height,
-			this.props.maxWidth,
-			this.props.maxHeight
-		);
+		this.media.setDimensions(this.getMediaDimensionsProperties());
 		// Align media elementu
 		this.alignMedia();
 	},
@@ -264,6 +253,74 @@ slide.prototype = _.extend({
 	 */
 	setLoadingState: function(isLoading) {
 		_[isLoading ? 'addClass' : 'removeClass'](this.el, this.loadingCssClass)
+	},
+
+	/**
+	 * Savācam media dimensions objektu. 
+	 * Tas tiek padots media, kad to mount vai resize
+	 */
+	getMediaDimensionsProperties: function() {
+		var p = {
+			width: this.props.width,
+			height: this.props.height,
+			maxWidth: this.props.maxWidth,
+			maxHeight: this.props.maxHeight,
+			minWidth: this.props.minWidth,
+			minHeight: this.props.minHeight
+		}; 
+
+		/**
+		 * !! Sizing method
+		 * fit - media iekļaujas atvēlētajā rāmī
+		 *   width, height - empty
+		 *   maxWidth, maxHeight: 100%
+		 * cover - media pārklāj atvēlēto rāmi
+		 */
+
+		switch (this.props.size) {
+			case 'cover':
+				var s = this.calculateDimensionsCover();
+
+				p.width = s.width;
+				p.height = s.height;
+				p.maxWidth = '';
+				p.maxHeight = '';
+				p.minWidth = '';
+				p.minHeight = '';
+
+				//console.log(p.width, p.height, this.media.natural, this.props.src);
+
+				break;
+		}
+		
+		return p;
+	},
+
+	/**
+	 * Aprēķinām media elementa izmērus priekš izmēra Cover
+	 */
+	calculateDimensionsCover: function() {
+		var cw = _.width(this.el);
+		var ch = _.height(this.el);
+
+		var mw = this.media.natural.width;
+		var mh = this.media.natural.height;
+		// Malu attiecība
+		var mr = mw/mh;
+
+		// Vajag cover izmērus		
+		var w = cw;
+		var h = w/mr;
+
+		if (h < ch) {
+			h = ch;
+			w = h*mr;
+		}
+
+		return {
+			width: w,
+			height: h
+		}
 	},
 
 	/**
