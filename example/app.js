@@ -5,7 +5,13 @@ var V = new window.webit.skeletonGallery.viewer(
         rotate: true,
         autoStart: true,
         handleWindowResize: true,
-        checkSlidesTransitionInProgress: true
+        checkSlidesTransitionInProgress: true,
+        slideDefault: {
+            size: 'cover'
+        },
+
+        transition: TransitionSlide3d
+
         
         // Default vērtības, kuras tiek izmantotas, ja item'am tāds nav norādītas
         // ,slideDefault: {
@@ -24,6 +30,7 @@ var V = new window.webit.skeletonGallery.viewer(
         'https://farm1.staticflickr.com/323/18519058198_ee3de56d05_k.jpg',
         'https://farm7.staticflickr.com/6226/6365397157_178f833cf9_b.jpg',
         {
+            size: '',
             type: 'image',
             src: 'https://farm1.staticflickr.com/346/18721202881_b4dfabffd9_k.jpg',
             width: '50%',
@@ -44,99 +51,99 @@ var V = new window.webit.skeletonGallery.viewer(
     ]
 );
 
-V.on('viewer.slidetransition', function(oldSlide, newSlide, direction, viewer, callback){
+// V.on('viewer.slidetransition', function(oldSlide, newSlide, direction, viewer, callback){
     
-    if (oldSlide && newSlide) {
-        var vd = viewer.getDimensions();
+//     if (oldSlide && newSlide) {
+//         var vd = viewer.getDimensions();
 
         
-        xnew = (direction == 'next' ? vd.width : -vd.width);
-        xoldafter = (direction == 'next' ? -vd.width : vd.width);
+//         xnew = (direction == 'next' ? vd.width : -vd.width);
+//         xoldafter = (direction == 'next' ? -vd.width : vd.width);
         
 
-        $(oldSlide.el).css({
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            transform: 'translate3d(0,0,0)',
-            transition: 'all, 700ms',
-            zIndex: 100 + oldSlide.mountIndex
-        });
-        $(newSlide.el).css({
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            transform: 'translate3d('+xnew+'px,0,0)',
-            transition: 'all, 700ms',
-            zIndex: 100 + newSlide.mountIndex
-        });
+//         $(oldSlide.el).css({
+//             position: 'absolute',
+//             top: 0,
+//             left: 0,
+//             transform: 'translate3d(0,0,0)',
+//             transition: 'all, 700ms',
+//             zIndex: 100 + oldSlide.mountIndex
+//         });
+//         $(newSlide.el).css({
+//             position: 'absolute',
+//             top: 0,
+//             left: 0,
+//             transform: 'translate3d('+xnew+'px,0,0)',
+//             transition: 'all, 700ms',
+//             zIndex: 100 + newSlide.mountIndex
+//         });
 
-        viewer.mountSlide(newSlide);
+//         viewer.mountSlide(newSlide);
 
-        window.setTimeout(function(){
-            $(oldSlide.el).css({
-                transform: 'translate3d('+xoldafter+'px,0,0)'
-            });
-            $(newSlide.el).css({
-                transform: 'translate3d(0,0,0)'
-            })
-        }, 0);
+//         window.setTimeout(function(){
+//             $(oldSlide.el).css({
+//                 transform: 'translate3d('+xoldafter+'px,0,0)'
+//             });
+//             $(newSlide.el).css({
+//                 transform: 'translate3d(0,0,0)'
+//             })
+//         }, 0);
 
-        window.setTimeout(function(){
-            viewer.unmountSlide(oldSlide);
-            callback();
-        }, 800)
-
-        
+//         window.setTimeout(function(){
+//             viewer.unmountSlide(oldSlide);
+//             callback();
+//         }, 800)
 
         
+
         
-    }
-    else {
-        if (oldSlide) {
-            viewer.unmountSlide(oldSlide);
-        }
-        if (newSlide) {
-            viewer.mountSlide(newSlide);
-        }
+        
+//     }
+//     else {
+//         if (oldSlide) {
+//             viewer.unmountSlide(oldSlide);
+//         }
+//         if (newSlide) {
+//             viewer.mountSlide(newSlide);
+//         }
 
-        callback();
-    }
-});
+//         callback();
+//     }
+// });
 
-V.on('slide.mount', function(slide){
-    // Izsaukt attiecīgo event, tikai, kad ienāk active slide
-    // $(V.el).animate({
-    //  height: slide.media.height
-    // }, 200)
-});
+// V.on('slide.mount', function(slide){
+//     // Izsaukt attiecīgo event, tikai, kad ienāk active slide
+//     // $(V.el).animate({
+//     //  height: slide.media.height
+//     // }, 200)
+// });
 
-V.on('slide.beforemount', function(callback, slide, defaultCss){
+// V.on('slide.beforemount', function(callback, slide, defaultCss){
     
-    // Taisām reveal animāciju tikai, ja slide nav iemontēts
-    if (!slide.media.mounted) {
-        defaultCss.opacity = 0;
+//     // Taisām reveal animāciju tikai, ja slide nav iemontēts
+//     if (!slide.media.mounted) {
+//         defaultCss.opacity = 0;
         
-        $(slide.media.el).css(defaultCss);
+//         $(slide.media.el).css(defaultCss);
 
-        slide.media.needRevealAnimation = true;
-    }
-    callback();
-});
+//         slide.media.needRevealAnimation = true;
+//     }
+//     callback();
+// });
 
-V.on('slide.aftermount', function(callback, slide){
+// V.on('slide.aftermount', function(callback, slide){
     
 
-    if (slide.media.needRevealAnimation) {
-        $(slide.media.el).stop().animate({
-            opacity: 1
-        }, 2000, function(){
-            callback();
-        });
+//     if (slide.media.needRevealAnimation) {
+//         $(slide.media.el).stop().animate({
+//             opacity: 1
+//         }, 2000, function(){
+//             callback();
+//         });
 
-        delete slide.media.needRevealAnimation;
-    }
-});
+//         delete slide.media.needRevealAnimation;
+//     }
+// });
 
 var N = new window.webit.skeletonGallery.navigation({
     viewer: V,

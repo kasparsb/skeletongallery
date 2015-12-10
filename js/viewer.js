@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var events = require('./events');
 var slides = require('./slides');
+var stepper = require('./stepper');
 
 var viewer = function(props, items) {
 	this.name = 'viewer';
@@ -38,7 +39,7 @@ var viewer = function(props, items) {
 	 */
 	this.slidesTransitionInProgress = false;
 
-	this.preloadThreshold = 2;
+	this.preloadThreshold = 4;
 
 	// Iemontēto slide rinda
 	this.mountQueue = [];
@@ -143,46 +144,48 @@ viewer.prototype = _.extend({
 		}
 	},
 
-	
-
-
-	handleDefaultSlideTransition: function(oldSlide, newSlide, direction, callback) {
-		// Esošais slide
-		if (oldSlide) {
-			this.unmountSlide(oldSlide);
-		}
-		// Nākošais slaids
-		if (newSlide) {
-			this.mountSlide(newSlide);
-		}
-
-		callback();
-	},
-
 	handleSlidesTransition: function(oldSlide, newSlide, direction) {
+		// Ieliekam slaidu rindā. Ja Viewerī tiek likti vairāki slaidi, tad vajag kontrolēt to secību
 		this.queueSlide(newSlide);
 
+		// Funkcija, kas tiek izpildiāta, kad slide transtiotion ir izpildījies
+		// Slide transition varbūt ilgs process, atkarībā no animācijas, tāpēc funkcija ir asinhrona
 		var transitionDone = _.bind(function() {
 			this.slidesTransitionInProgress = false;
 			// Saka, ka ir noticis slide change
 			this.trigger('change');
 		}, this);
 
+		// Liekam pazīmi, ka notiek slideTransition process
 		this.slidesTransitionInProgress = true;
-		if (this.isListeners('slidetransition')) {
-			this.triggerFirst('slidetransition', oldSlide, newSlide, direction, this, transitionDone);
+
+		
+		if (!this.stepper) {
+			this.stepper = new stepper();
 		}
-		else {
-			this.handleDefaultSlideTransition(oldSlide, newSlide, direction, transitionDone);
-		}
+
+		this.props.transition.before(oldSlide, newSlide, direction, this);
+
+		this.stepper.run(
+			this.props.transition.duration,
+			this.props.transition.easing,
+
+			_.bind(function(progress){
+				this.props.transition.step(oldSlide, newSlide, direction, progress, this);
+			}, this),
+
+			_.bind(function(){
+				this.props.transition.after(oldSlide, newSlide, direction, this);
+
+				transitionDone();
+			}, this)
+		);
+
 	},
-
-
-
-
 
 	/**
 	 * Atgriež esošos viewer izmērus
+	 * @todo Izmērus ir jākešo
 	 */
 	getDimensions: function() {
 		return {
