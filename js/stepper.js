@@ -4,7 +4,7 @@ var Stepper = function() {
     /**
      * Frames per second
      */
-    this.fps = 100;
+    this.fps = 60;
     this.precision = 100000;
     this.progress = 0;
     this.current = 0;

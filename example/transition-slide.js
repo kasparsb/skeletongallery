@@ -1,6 +1,8 @@
 var TransitionSlide = {
-    duration: 300,
-    easing: [.42,0,.58,1],
+    duration: 1000,
+    
+    easing: [.4,1.44,.38,.34],
+
     before: function(oldSlide, newSlide, direction, viewer) {
         this.dimensions = viewer.getDimensions();
 
@@ -18,13 +20,13 @@ var TransitionSlide = {
                 position: 'absolute',
                 top: 0,
                 left: 0,
-                transform: 'translate('+newx+'px, 0)'
+                transform: 'translate3d('+newx+'px, 0, 0)'
             })
             $(oldSlide.el).css({
                 position: 'absolute',
                 top: 0,
                 left: 0,
-                transform: 'translate(0, 0)'
+                transform: 'translate3d(0, 0, 0)'
             })
         }
         
@@ -43,10 +45,10 @@ var TransitionSlide = {
             
 
             $(newSlide.el).css({
-                transform: 'translate('+newx+'px, 0)'
+                transform: 'translate3d('+newx+'px, 0, 0)'
             });
             $(oldSlide.el).css({
-                transform: 'translate('+oldx+'px, 0)'
+                transform: 'translate3d('+oldx+'px, 0, 0)'
             })
         }
     }

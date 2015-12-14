@@ -163,3 +163,13 @@ var N = new window.webit.skeletonGallery.navigation({
 // })
 
 //V.first();
+
+
+
+
+$('#startransitionstepping').on('click', function(){
+    V.startTransitionStepping();
+});
+$('#steppingprogress').on('change', function(){
+    V.setTransitionProgress(parseFloat($(this).val().replace(',', '.')));
+})

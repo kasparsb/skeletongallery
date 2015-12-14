@@ -183,6 +183,24 @@ viewer.prototype = _.extend({
 
 	},
 
+
+	startTransitionStepping: function() {
+		this.tempState = {
+			newSlide: this.slides.getNext(),
+		    oldSlide: this.slides.active
+		}
+		
+		this.slides.setActive(this.tempState);
+
+		this.props.transition.before(this.tempState.oldSlide, this.tempState.newSlide, 'next', this);
+	},
+
+	setTransitionProgress: function(progress) {
+		
+		this.props.transition.step(this.tempState.oldSlide, this.tempState.newSlide, 'next', progress, this);
+		
+	},
+
 	/**
 	 * Atgriež esošos viewer izmērus
 	 * @todo Izmērus ir jākešo
