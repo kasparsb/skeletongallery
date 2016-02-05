@@ -1,7 +1,8 @@
 var _ = require('underscore');
 var events = require('./events');
 var slides = require('./slides');
-var stepper = require('./stepper');
+var Transition = require('./viewer-transition');
+var Swipe = require('./viewer-swipe');
 
 var viewer = function(props, items) {
 	this.name = 'viewer';
@@ -44,6 +45,9 @@ var viewer = function(props, items) {
 	// Iemontēto slide rinda
 	this.mountQueue = [];
 
+	this.transition = new Transition(this);
+	this.swipe = new Swipe(this);
+
 	this.init();
 }
 
@@ -54,7 +58,7 @@ viewer.prototype = _.extend({
 		this.slides = new slides(this.items, this);
 		this.slides.rotate = this.props.rotate;
 		this.slides.preloadThreshold = this.preloadThreshold;
-		
+
 		this.setEvents();
 
 		// Check if we need to automaticaly load first slide
@@ -68,6 +72,21 @@ viewer.prototype = _.extend({
 		if (this.props.handleWindowResize) {
 			_.on(window, 'resize', _.debounce(this.handleWindowResize, 100, this));
 		}
+
+		/**
+		 * Uzliekam transition eventus
+		 * Transition ir animācija, kur var notikt noteiktu laiku, tāpēc
+		 * vajag iespēju piefiksēt, kad notiek šī animācija
+		 */
+		this.transition.on('start', _.bind(function(){
+			this.slidesTransitionInProgress = true;
+		}, this));
+
+		this.transition.on('end', _.bind(function(){
+			this.slidesTransitionInProgress = false;
+
+			this.trigger('change');
+		}, this))
 	},
 
 	handleWindowResize: function() {
@@ -144,54 +163,22 @@ viewer.prototype = _.extend({
 		}
 	},
 
-	handleSlidesTransition: function(oldSlide, newSlide, direction) {
-		// Ieliekam slaidu rindā. Ja Viewerī tiek likti vairāki slaidi, tad vajag kontrolēt to secību
-		this.queueSlide(newSlide);
-
-		// Funkcija, kas tiek izpildiāta, kad slide transtiotion ir izpildījies
-		// Slide transition varbūt ilgs process, atkarībā no animācijas, tāpēc funkcija ir asinhrona
-		var transitionDone = _.bind(function() {
-			this.slidesTransitionInProgress = false;
-			// Saka, ka ir noticis slide change
-			this.trigger('change');
-		}, this);
-
-		// Liekam pazīmi, ka notiek slideTransition process
-		this.slidesTransitionInProgress = true;
-
-		
-		if (!this.stepper) {
-			this.stepper = new stepper();
-		}
-
-		this.props.transition.before(oldSlide, newSlide, direction, this);
-
-		this.stepper.run(
-			this.props.transition.duration,
-			this.props.transition.easing,
-
-			_.bind(function(progress){
-				this.props.transition.step(oldSlide, newSlide, direction, progress, this);
-			}, this),
-
-			_.bind(function(){
-				this.props.transition.after(oldSlide, newSlide, direction, this);
-
-				transitionDone();
-			}, this)
-		);
-
-	},
-
-
-	startTransitionStepping: function() {
+	startTransitionStepping: function(direction) {
+		/**
+		 * @todo Šo mainīgo pārsaukt savādāk
+		 */
 		this.tempState = {
-			newSlide: this.slides.getNext(),
-		    oldSlide: this.slides.active
+			newSlide: this.slides[direction == 'next' ? 'getNext' : 'getPrev'](),
+		    oldSlide: this.slides.active,
+		    direction: direction
 		}
-		
-		this.slides.setActive(this.tempState);
 
+		this.queueSlide(this.tempState.newSlide);
+		
+		// Uzstādām aktīvo slide
+		this.slides.setActive(this.tempState.newSlide);
+
+		// Uzsākam transition
 		this.props.transition.before(this.tempState.oldSlide, this.tempState.newSlide, 'next', this);
 	},
 
@@ -223,25 +210,44 @@ viewer.prototype = _.extend({
 	},
 
 	/**
-	 * Show slide by index
+	 * Nomainām slide, sagatavojam transition, bet nepalaižam to
 	 */
-	show: function(newSlide, direction) {
+	changeSlide: function(newSlide) {
 		if (this.props.checkSlidesTransitionInProgress && this.slidesTransitionInProgress) {
-			return;
+			return false;
 		}
 
 		// Ja ienāk aktīvais slaids, tad neko nedarām
 		if (this.slides.isActive(newSlide)) {
-			return;
+			return false;;
 		}
 
-		// Ja this.active ir inicializēts (lielāks vienāds ar 0)
-		var oldSlide = this.slides.active
-		
 		this.slides.setActive(newSlide);
 
-		// Palaižam slides transition
-		this.handleSlidesTransition(oldSlide, newSlide, direction);
+		return true;
+	},
+
+	/**
+	 * Show slide by index
+	 */
+	show: function(newSlide, direction) {
+		// Vecais slide
+		var currentSlide = this.slides.active;
+
+		// Turpinām, tikai, ja slide ir nomainīts
+		if (this.changeSlide(newSlide)) {
+
+			// Ieliekam slaidu rindā. Ja Viewerī tiek likti vairāki slaidi, tad vajag kontrolēt to secību
+        	this.queueSlide(newSlide);
+
+			this.transition
+				// Iestartējam transition
+				.start(currentSlide ? currentSlide : newSlide)
+				.setDirection(direction)
+				.setNewSlide(newSlide, direction)
+				// Palaižam transition
+				.run();
+		}
 	},
 
 	first: function() {

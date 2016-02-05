@@ -5,6 +5,7 @@ var Stepper = function() {
      * Frames per second
      */
     this.fps = 60;
+    this.interval = 1000 / this.fps;
     this.precision = 100000;
     this.progress = 0;
     this.current = 0;
@@ -27,13 +28,30 @@ Stepper.prototype = {
     },
 
     /**
+     * Run from given progress
+     */
+    runFrom: function(progress, duration, bezierCurve, stepCb, doneCb) {
+        this.stepCallback = stepCb;
+        this.doneCallback = doneCb
+
+        //this.easing = new KeySpline(bezierCurve[0], bezierCurve[1], bezierCurve[2], bezierCurve[3]);
+        this.easing = new Bezier(bezierCurve[0], bezierCurve[1], bezierCurve[2], bezierCurve[3]);
+        
+        this.duration = duration;
+
+        this.startTime = +new Date();
+        this.startTime -= (duration * progress);
+        this.progress = progress;
+
+        this.step();
+    },
+
+    /**
      * Piefiksējam sākuma laiku
      */
     start: function() {
         this.startTime = +new Date();
-        this.progress = 0;
-
-        this.interval = 1000 / this.fps;
+        this.progress = 0;        
     },
 
     done: function() {
