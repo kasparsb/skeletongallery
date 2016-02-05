@@ -248,6 +248,10 @@ slide.prototype = _.extend({
 		this.alignMedia();
 	},
 
+	css: function(cssRules) {
+		_.css(this.el, cssRules);
+	},
+
 	/**
 	 * Uzstādām slide loading indikāciju
 	 */
