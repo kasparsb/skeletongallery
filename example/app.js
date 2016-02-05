@@ -7,7 +7,7 @@ var V = new window.webit.skeletonGallery.viewer(
         handleWindowResize: true,
         checkSlidesTransitionInProgress: true,
         slideDefault: {
-            size: 'cover'
+            size: 'fit'
         },
 
         transition: TransitionSlide3d
@@ -27,6 +27,7 @@ var V = new window.webit.skeletonGallery.viewer(
     [
         // Image var būt kā strings (url uz bildi) vai kā objekts, kurā norāda
         // netikai bildes url, bet arī vēlamos izmērus
+        'http://www.la.lv/wp-content/uploads/2016/02/3dukuri-664x996.jpg',
         'https://farm1.staticflickr.com/323/18519058198_ee3de56d05_k.jpg',
         'https://farm7.staticflickr.com/6226/6365397157_178f833cf9_b.jpg',
         {
