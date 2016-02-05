@@ -172,4 +172,10 @@ $('#startransitionstepping').on('click', function(){
 });
 $('#steppingprogress').on('change', function(){
     V.setTransitionProgress(parseFloat($(this).val().replace(',', '.')));
+});
+$('#replace-items').on('click', function(){
+    V.replaceItems([
+        'https://farm1.staticflickr.com/504/18734987615_b76d794349_k.jpg',
+        'https://farm1.staticflickr.com/404/18740159701_93e16c8b57_k.jpg'
+    ])
 })
