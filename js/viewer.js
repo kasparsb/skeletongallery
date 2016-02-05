@@ -266,6 +266,27 @@ viewer.prototype = _.extend({
 	 */
 	prev: function() {
 		this.show(this.slides.getPrev(), 'prev');
+	},
+
+	/**
+	 * Change current loade slides for new ones
+	 * @param array New slides
+	 * @param number Slide index to load. If not passed, first slide will be loaded
+	 */
+	replaceItems: function(newItems, index) {
+		if (typeof index == 'undefined') {
+			index = 0;
+		}
+
+		// Unmount currently active slide
+		this.unmountSlide(this.slides.active);
+
+		// Replace slides
+		this.slides.replaceItems(newItems);
+
+		// Set active slide and mount
+		this.slides.setActive(this.slides.get(index));
+		this.mountSlide(this.slides.active);
 	}
 }, events);
 
