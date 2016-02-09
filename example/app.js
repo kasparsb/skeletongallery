@@ -2,7 +2,7 @@ var V = new window.webit.skeletonGallery.viewer(
     // Viewer props
     {
         container: $('#g').get(0),
-        rotate: true,
+        rotate: false,
         autoStart: true,
         handleWindowResize: true,
         checkSlidesTransitionInProgress: true,
@@ -28,27 +28,27 @@ var V = new window.webit.skeletonGallery.viewer(
         // Image var būt kā strings (url uz bildi) vai kā objekts, kurā norāda
         // netikai bildes url, bet arī vēlamos izmērus
         'http://www.la.lv/wp-content/uploads/2016/02/3dukuri-664x996.jpg',
-        'https://farm1.staticflickr.com/323/18519058198_ee3de56d05_k.jpg',
-        'https://farm7.staticflickr.com/6226/6365397157_178f833cf9_b.jpg',
-        {
-            size: '',
-            type: 'image',
-            src: 'https://farm1.staticflickr.com/346/18721202881_b4dfabffd9_k.jpg',
-            width: '50%',
-            horizontalAlign: 'center',
-            //loadingCssClass: 'xcvxcv'
-        },
-        {
-            src: 'https://farm1.staticflickr.com/261/18557421739_965a238bc5_k.jpg'
-        },
-        {
-            src: 'https://farm1.staticflickr.com/364/18728105725_a4d97ad48d_k.jpg'
-        },
-        'https://farm1.staticflickr.com/492/18111059973_bf0d4d38f8_b.jpg',
-        'https://farm9.staticflickr.com/8860/18126752334_1eb45ffc10_h.jpg',
-        'https://farm1.staticflickr.com/283/18114357684_1497d4e18a_h.jpg',
-        'https://farm1.staticflickr.com/504/18734987615_b76d794349_k.jpg',
-        'https://farm1.staticflickr.com/404/18740159701_93e16c8b57_k.jpg'
+        'https://farm1.staticflickr.com/323/18519058198_ee3de56d05_k.jpg'
+        // 'https://farm7.staticflickr.com/6226/6365397157_178f833cf9_b.jpg',
+        // {
+        //     size: '',
+        //     type: 'image',
+        //     src: 'https://farm1.staticflickr.com/346/18721202881_b4dfabffd9_k.jpg',
+        //     width: '50%',
+        //     horizontalAlign: 'center',
+        //     //loadingCssClass: 'xcvxcv'
+        // },
+        // {
+        //     src: 'https://farm1.staticflickr.com/261/18557421739_965a238bc5_k.jpg'
+        // },
+        // {
+        //     src: 'https://farm1.staticflickr.com/364/18728105725_a4d97ad48d_k.jpg'
+        // },
+        // 'https://farm1.staticflickr.com/492/18111059973_bf0d4d38f8_b.jpg',
+        // 'https://farm9.staticflickr.com/8860/18126752334_1eb45ffc10_h.jpg',
+        // 'https://farm1.staticflickr.com/283/18114357684_1497d4e18a_h.jpg',
+        // 'https://farm1.staticflickr.com/504/18734987615_b76d794349_k.jpg',
+        // 'https://farm1.staticflickr.com/404/18740159701_93e16c8b57_k.jpg'
     ]
 );
 
