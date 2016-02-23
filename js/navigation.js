@@ -1,36 +1,58 @@
 var _ = require('underscore');
+var events = require('./events');
 
 var navigation = function(props) {
-	// Viewer instance
-	this.viewer = props.viewer;
+    // Viewer instance
+    this.viewer = props.viewer;
 
-	this.next = props.next;
-	this.prev = props.prev;
+    this.props = props;
 
-	this.setEvents();
+    this.setEvents();
 }
 
-navigation.prototype = {
-	setEvents: function() {
-		// Navigācijas pogas
-		_.on(this.next, 'click', _.bind(function(ev){
-			ev.preventDefault();
-			this.viewer.next();
-		}, this));
+navigation.prototype = _.extend({
+    setEvents: function() {
+        // Navigācijas pogas
+        _.on(this.props.next, 'click', _.bind(function(ev){
+            ev.preventDefault();
+            this.next();
+        }, this));
 
-		_.on(this.prev, 'click', _.bind(function(ev){
-			ev.preventDefault();
-			this.viewer.prev();
-		}, this));
+        _.on(this.props.prev, 'click', _.bind(function(ev){
+            ev.preventDefault();
+            this.prev();
+        }, this));
 
-		// Klaviatūras eventi
-		_.on(window, 'keyup', _.bind(function(ev){
-			switch ( ev.keyCode ) {
-				case 39: this.viewer.next(); break;
-				case 37: this.viewer.prev(); break;
-			}
-		}, this));
-	}
-}
+        // Klaviatūras eventi
+        _.on(window, 'keyup', _.bind(function(ev){
+            switch ( ev.keyCode ) {
+                case 39: this.next(); break;
+                case 37: this.prev(); break;
+            }
+        }, this));
+    },
+
+    next: function() {
+        var i = this.viewer.slides.active.index;
+
+        this.viewer.next();
+
+        this.hasChanged(i, 'next');
+    },
+
+    prev: function() {
+        var i = this.viewer.slides.active.index;
+
+        this.viewer.prev();
+
+        this.hasChanged(i, 'prev');
+    },
+
+    hasChanged: function(lastIndex, direction) {
+        if (this.viewer.slides.active.index == lastIndex) {
+            this.trigger('notchanged', direction);
+        }
+    }
+}, events);
 
 module.exports = navigation;
