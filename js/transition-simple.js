@@ -4,3 +4,5 @@ var TransitionSimple = {
         viewer.unmountSlide(currentSlide);
     }
 }
+
+module.exports = TransitionSimple;

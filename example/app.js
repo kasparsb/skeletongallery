@@ -10,8 +10,7 @@ var V = new window.webit.skeletonGallery.viewer(
             size: 'fit'
         },
 
-        //transition: TransitionSimple
-        transition: TransitionSlide3d
+        //transition: TransitionSlide3d
 
         
         // Default vērtības, kuras tiek izmantotas, ja item'am tāds nav norādītas

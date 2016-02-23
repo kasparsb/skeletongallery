@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var events = require('./events');
 var stepper = require('./stepper');
+var transitionSimple = require('./transition-simple');
 
 
 /**
@@ -18,7 +19,14 @@ function viewerTransition(viewer) {
     this.name = 'viewerTransitions';
 
     this.viewer = viewer;
-    this.transition = viewer.props.transition;
+
+    // Transition. Ja nav definēta, tad izmantojam transitionSimple
+    if (viewer.props.transition) {
+        this.transition = viewer.props.transition;
+    }
+    else {
+        this.transition = transitionSimple;
+    }
 
     this.stepper = new stepper();
 }
