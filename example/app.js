@@ -152,6 +152,10 @@ var N = new window.webit.skeletonGallery.navigation({
     prev: $('#gprev').get(0)
 });
 
+N.on('notchanged', function(direction) {
+    console.log('notchanged', direction);
+})
+
 // var T = new window.webit.skeletonGallery.thumbnails({
 //     viewer: V,
 //     container: $('#t').get(0),
