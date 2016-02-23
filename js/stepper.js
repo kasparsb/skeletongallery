@@ -1,6 +1,7 @@
 var Bezier = require('./bezier2.js');
 
 var Stepper = function() {
+    this.defaultBezierCurve = [0,0,1,1];
     /**
      * Frames per second
      */
@@ -16,11 +17,9 @@ Stepper.prototype = {
         this.stepCallback = stepCb;
         this.doneCallback = doneCb
 
-        //this.easing = new KeySpline(bezierCurve[0], bezierCurve[1], bezierCurve[2], bezierCurve[3]);
-        this.easing = new Bezier(bezierCurve[0], bezierCurve[1], bezierCurve[2], bezierCurve[3]);
-        
+        this.easing = this.getEasing(bezierCurve);
 
-        this.duration = duration;
+        this.duration = isNaN(duration) ? 0 : duration;
         this.current = 0;
 
         this.start();
@@ -91,6 +90,13 @@ Stepper.prototype = {
         this.progress = this.easing.get(delta / this.duration);
 
         this.progress = Math.round(this.progress*this.precision)/this.precision;
+    },
+
+    getEasing: function(bezierCurve) {
+        if (!(bezierCurve && bezierCurve.length && bezierCurve.length == 4)) {
+            bezierCurve = this.defaultBezierCurve;
+        }
+        return new Bezier(bezierCurve[0], bezierCurve[1], bezierCurve[2], bezierCurve[3]);
     }
 }
 

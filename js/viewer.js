@@ -240,11 +240,25 @@ viewer.prototype = _.extend({
             // Ieliekam slaidu rindā. Ja Viewerī tiek likti vairāki slaidi, tad vajag kontrolēt to secību
             this.queueSlide(newSlide);
 
+            
+            /**
+             * Šis ir gadījums, kad viewer ir tukšs un tiek ievietots pirmais
+             * slide. Tā kā transition notiek tikai starp currentSlide un newSlide
+             * tad šajā gadījumā transition nenotiks. Tāpēc vajag šajā vietā veikt
+             * slide mount
+             */
+            if (!currentSlide) {
+                this.mountSlide(newSlide);
+            }
+
+            
+
             this.transition
                 // Iestartējam transition
-                .start(currentSlide ? currentSlide : newSlide)
+                .start()
                 .setDirection(direction)
-                .setNewSlide(newSlide, direction)
+                .setFrom(currentSlide)
+                .setTo(newSlide)
                 // Palaižam transition
                 .run();
         }

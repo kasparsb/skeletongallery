@@ -2,6 +2,18 @@ var _ = require('underscore');
 var events = require('./events');
 var stepper = require('./stepper');
 
+
+/**
+ * 3 soļi kuri tiek izpildīti veicot transition
+ *   - newSlide: kad tiek pievienots jauns slide
+ *       slide, direction, viewer
+ *   - before: pirms tiek izpildīta transition
+ *       currentSlide, viewer
+ *   - step: transition animācijas solis
+ *       currentSlide, newSlide, direction, progress, viewer
+ *   - after: pēc tam, kad transition beidzas
+ *       currentSlide, newSlide, direction, viewer
+ */
 function viewerTransition(viewer) {
     this.name = 'viewerTransitions';
 
@@ -13,39 +25,51 @@ function viewerTransition(viewer) {
 
 viewerTransition.prototype = _.extend({
 
+    /**
+     * Uzstādām virzienu, kādā notiek pārslēgšanās 
+     * starp slaidiem
+     * prev
+     * next
+     */
     setDirection: function(direction) {
         this.direction = direction;
 
         return this;
     },
 
-    setNewSlide: function(slide, direction) {
-        // Ja ienāk pirmais slide, tad nav direction
-        if (direction) {
-            this.newSlides[direction] = slide;
-            this.transition.newSlide(slide, direction, this.viewer);
+    /**
+     * Slide, no kura tiek animēts
+     */
+    setFrom: function(slide) {
+        this.currentSlide = slide;
+
+        return this;
+    },
+
+    /**
+     * Slide, uz kuru tiek animēts
+     */
+    setTo: function(slide) {
+        if (this.direction) {
+            this.newSlides[this.direction] = slide;
         }
 
         return this;
     },
 
-    start: function(currentSlide) {
+    start: function() {
         this.newSlides = {
             next: null,
             prev: null
         }
         this.direction = null;
-
-        this.currentSlide = currentSlide;
-
-        // Šajā mirklī notiek current slide pozicionēšana
-        this.transition.before(this.currentSlide, this.viewer);
+        this.currentSlide = null;
 
         return this;
     },
 
     run: function() {
-        // Ja nav direction, tad neturpinam
+        // Ja nav direction, tad neturpinām
         if (!this.direction) {
             return;
         }
@@ -54,6 +78,9 @@ viewerTransition.prototype = _.extend({
         if (this.newSlides.next == null && this.newSlides.prev == null) {
             return;
         }
+
+        // Šajā mirklī notiek current slide pozicionēšana
+        this.executeTransitionMethod('before');
 
         this.trigger('start');
         this.stepper.run(
@@ -67,16 +94,13 @@ viewerTransition.prototype = _.extend({
     },
 
     step: function(progress) {
-        this.transition.step(this.currentSlide, this.newSlides, this.direction, progress, this.viewer);
+        this.executeTransitionMethod('step', [progress]);
     },
 
     end: function() {
+        this.executeTransitionMethod('after');
         this.trigger('end');
-        //this.transition.after(this.currentSlide, this.newSlide, this.direction, this.viewer);
-    },
-
-
-    
+    },    
 
     runFrom: function(progress) {
         this.stepper.runFrom(
@@ -88,6 +112,31 @@ viewerTransition.prototype = _.extend({
 
             _.bind(this.end, this)
         );
+    },
+
+    /**
+     * Izpildām user definētās transition metodes
+     */
+    executeTransitionMethod: function(method, extraArguments, replaceArguments) {
+        if (this.transition[method]) {
+            // Default argumenti, kuri tiek padoti visām transition metodēm
+            var args = [
+                this.viewer,
+                this.currentSlide,
+                this.newSlides,
+                this.direction
+            ];
+        
+            // Pieliekam extra argumentu, ja tādi ir
+            args = args.concat(typeof extraArguments == 'undefined' ? [] : extraArguments);
+
+            // Ja padoti replace args, tad izmantojam tos
+            if (replaceArguments) {
+                args = replaceArguments;
+            }
+
+            this.transition[method].apply(this, args);
+        }
     }
 }, events);
 

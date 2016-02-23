@@ -3,46 +3,37 @@ var TransitionSlide3d = {
     //easing: [.42,0,.58,1],
     easing: [1,1,1,1],
 
-    before: function(oldSlide, viewer) {
+    before: function(viewer, currentSlide, newSlides, direction) {
         this.dimensions = viewer.getDimensions();
 
         this.width = this.dimensions.width;
         this.height = this.dimensions.height;
 
-        if (oldSlide) {
-            oldSlide.css({
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                transform: 'translate3d(0, 0, 0)',
-                zIndex: 2
-            });
-
-            viewer.mountSlide(oldSlide);
-        }
         
-    },
-
-    /**
-     * Ienāk jaunais slide
-     * @param object Jaunais slide
-     * @param string Virziens, kurā ir jaunais slide. Prev vai Next
-     */ 
-    newSlide: function(slide, direction, viewer) {
-        viewer.mountSlide(slide);
-
-        var x = (this.width/2) * (direction == 'next' ? 1 : -1);
-
-        slide.css({
+        currentSlide.css({
             position: 'absolute',
             top: 0,
             left: 0,
+            transform: 'translate3d(0, 0, 0)',
+            zIndex: 2
+        });
+
+
+        var x = (this.width/2) * (direction == 'next' ? 1 : -1);
+
+        viewer.mountSlide(newSlides[direction]);
+
+        newSlides[direction].css({
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            display: 'block',
             transform: 'translate3d('+x+'px, 0, 0) scale(0.5)',
             zIndex: 1
         })
     },
 
-    step: function(currentSlide, newSlides, direction, progress, viewer) {
+    step: function(viewer, currentSlide, newSlides, direction, progress) {
         var width = this.width/2;
         var scale = 0.5;
         var opacity = 0.5;
@@ -73,9 +64,9 @@ var TransitionSlide3d = {
         })
     },
 
-    after: function(oldSlide, newSlide, direction, viewer) {
+    after: function(viewer, currentSlide, newSlide, direction) {
         
-        //viewer.unmountSlide(oldSlide);
+        viewer.unmountSlide(currentSlide);
         
     }
 }
