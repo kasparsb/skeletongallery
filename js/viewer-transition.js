@@ -2,6 +2,7 @@ var _ = require('underscore');
 var events = require('./events');
 var stepper = require('./stepper');
 var transitionSimple = require('./transition-simple');
+var transitionFade = require('./transition-fade');
 
 
 /**
@@ -22,7 +23,16 @@ function viewerTransition(viewer) {
 
     // Transition. Ja nav definēta, tad izmantojam transitionSimple
     if (viewer.props.transition) {
-        this.transition = viewer.props.transition;
+        switch (viewer.props.transition) {
+            case 'simple':
+                this.transition = transitionSimple;
+                break;
+            case 'fade':
+                this.transition = transitionFade;
+                break;
+            default:
+                this.transition = viewer.props.transition;
+        }
     }
     else {
         this.transition = transitionSimple;
