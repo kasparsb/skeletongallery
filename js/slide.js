@@ -280,22 +280,25 @@ slide.prototype = _.extend({
          *   maxWidth, maxHeight: 100%
          * cover - media pārklāj atvēlēto rāmi
          */
+        var s = null;
         switch (this.props.size) {
             case 'cover':
-                var s = this.calculateDimensionsCover();
+                s = this.calculateDimensionsCover();
+                break;
             case 'fit':
-                var s = this.calculateDimensionsFit();
-            default: 
-                if (s) {
-                    p.width = s.width;
-                    p.height = s.height;
-                    p.maxWidth = '';
-                    p.maxHeight = '';
-                    p.minWidth = '';
-                    p.minHeight = '';
+                s = this.calculateDimensionsFit();
+                break;
+        }
 
-                    //console.log(p.width, p.height, this.media.natural, this.props.src);
-                }
+        if (s) {
+            p.width = s.width;
+            p.height = s.height;
+            p.maxWidth = '';
+            p.maxHeight = '';
+            p.minWidth = '';
+            p.minHeight = '';
+
+            //console.log(p.width, p.height, this.media.natural, this.props.src);
         }
         
         return p;
