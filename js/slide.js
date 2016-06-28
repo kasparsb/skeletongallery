@@ -293,8 +293,8 @@ slide.prototype = _.extend({
         if (s) {
             p.width = s.width;
             p.height = s.height;
-            p.maxWidth = '';
-            p.maxHeight = '';
+            p.maxWidth = p.maxWidth ? p.maxWidth : '';
+            p.maxHeight = p.maxHeight ? p.maxHeight : '';
             p.minWidth = '';
             p.minHeight = '';
 
@@ -335,17 +335,28 @@ slide.prototype = _.extend({
      * Aprēķinām media elementa izmērus priekš fit
      */
     calculateDimensionsFit: function() {
+        // Container dimensions
         var cw = _.width(this.el);
         var ch = _.height(this.el);
 
+        // Media dimensions
         var mw = this.media.natural.width;
         var mh = this.media.natural.height;
-        // Malu attiecība
+        
+        // Ratio
         var mr = mw/mh;
 
         // Resize to width
-        var w = cw;
-        var h = w/mr;
+        if (mw > cw) {
+            // Shrink to fit. Media is larger than container
+            var w = cw;
+            var h = w/mr;
+        }
+        else {
+            // Do not strech. Media is smaller than container
+            var w = mw;
+            var h = mh;
+        }
 
         if (h > ch) {
             h = ch;
