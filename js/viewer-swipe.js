@@ -20,13 +20,6 @@ function viewerSwipe(viewer) {
      */
     this.direction = 'horizontal';
 
-    // Slide, uz kuru mēģina pārslēgties
-    this.newSlides = {
-        prev: null,
-        next: null
-    }
-
-
     this.initSwipe();
     this.setEvents();
 }
@@ -34,8 +27,8 @@ function viewerSwipe(viewer) {
 viewerSwipe.prototype = {
     setEvents: function() {
         this.swipe.on('start', _.bind(this.onStart, this));
+        this.swipe.on('move', _.bind(this.onMove, this));
         this.swipe.on('end', _.bind(this.onEnd, this));
-        this.swipe.on('move', _.bind(this.onMove, this))
     },
 
     initSwipe: function() {
@@ -51,22 +44,10 @@ viewerSwipe.prototype = {
     onStart: function(ev) {
         this.dimensions = this.viewer.getDimensions();
 
-        this.newSlides = {
-            prev: null,
-            next: null
-        }
         this.swipeStarted = true;
         this.swipeProgress = 0;
-        this.direction = null;
-        this.transitionStarted = false;
-    },
 
-    onEnd: function(ev) {
-        if (!this.swipeStarted) {
-            return;
-        }
-
-        this.viewer.transition.runFrom(this.swipeProgress)
+        this.transitionSteppingStarted = false;
     },
 
     onMove: function(ev) {
@@ -74,58 +55,57 @@ viewerSwipe.prototype = {
             return;
         }
 
-        this.startTransition();
+        this.startTransitionStepping();
 
-        this.trackDirection(ev);
-        this.trackNewSlides();
-        this.trackProgress(ev);
+        this.swipeProgress = ev.width / this.dimensions.width;
+
+        this.viewer.transition.step(this.getDirection(ev.direction), this.swipeProgress);
     },
 
-    /**
-     * Pārbaudām vai vajag sākt transition stepping. Ja ir iesākts stepping,
-     * tad neko nedarām
-     */
-    startTransition: function(direction) {
-        if (this.transitionStarted) {
+    onEnd: function(ev) {
+        if (!this.swipeStarted) {
             return;
         }
 
-        this.transitionStarted = true;
-            
-        this.viewer.transition.start(this.viewer.slides.active);
+        var direction = this.getDirection(ev.direction);
+
+        this.viewer.transition.runFrom(direction, this.swipeProgress);
+
+        // Uzstādām jauno slide
+        this.viewer.changeSlide(
+            direction == 'next' ? this.getNext() : this.getPrev()
+        )
     },
 
-    trackProgress: function(ev) {
-        this.swipeProgress = ev.width / this.dimensions.width;
-
-        this.viewer.transition.step(this.swipeProgress);
-    },
-
-    trackDirection: function(ev) {
-        this.direction = this.getDirection(ev);
-
-        this.viewer.transition.setDirection(this.direction);
-    },
-
-    trackNewSlides: function() {
-        return;
-        if (!this.newSlides[this.direction]) {
-            this.newSlides[this.direction] = this.direction == 'next'
-                ? 
-                this.viewer.slides.getNext()
-                :
-                this.viewer.slides.getPrev();
-
-
-            this.viewer.transition.setNewSlide(
-                this.newSlides[this.direction],
-                this.direction
-            );
+    startTransitionStepping: function() {
+        if (this.transitionSteppingStarted) {
+            return;
         }
+
+        this.viewer.transition.start();
+        // Uzstādām slaid, no kura tiek veikta transition. Tas ir current slide
+        this.viewer.transition.setFrom(this.viewer.slides.active);
+        // Uzstādām gan next gan prev, jo nevar zināt kādā virzienā notiks swipe
+        this.viewer.transition.setTo(this.getNext(), 'next');
+        this.viewer.transition.setTo(this.getPrev(), 'prev');
+        // Dodam zināt, ka sāksies stepping
+        this.viewer.transition.beforeStepping();
+
+        this.transitionSteppingStarted = true;
+
+        return true;
     },
 
-    getDirection: function(ev) {
-        return ev.offset.x <= 0 ? 'next' : 'prev';
+    getDirection: function(swipeDirection) {
+        return swipeDirection == 'left' ? 'next' : 'prev'
+    },
+
+    getNext: function() {
+        return this.viewer.slides.get(this.viewer.slides.active.index + 1);
+    },
+
+    getPrev: function() {
+        return this.viewer.slides.get(this.viewer.slides.active.index -1);
     }
 }
 

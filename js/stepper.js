@@ -33,8 +33,7 @@ Stepper.prototype = {
         this.stepCallback = stepCb;
         this.doneCallback = doneCb
 
-        //this.easing = new KeySpline(bezierCurve[0], bezierCurve[1], bezierCurve[2], bezierCurve[3]);
-        this.easing = new Bezier(bezierCurve[0], bezierCurve[1], bezierCurve[2], bezierCurve[3]);
+        this.easing = this.getEasing(bezierCurve);
         
         this.duration = duration;
 

@@ -256,11 +256,10 @@ viewer.prototype = _.extend({
             this.transition
                 // Iestartējam transition
                 .start()
-                .setDirection(direction)
                 .setFrom(currentSlide)
-                .setTo(newSlide)
+                .setTo(newSlide, direction)
                 // Palaižam transition
-                .run();
+                .run(direction);
         }
     },
 
