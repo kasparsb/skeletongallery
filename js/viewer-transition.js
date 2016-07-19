@@ -3,7 +3,23 @@ var events = require('./events');
 var stepper = require('./stepper');
 var transitionSimple = require('./transition-simple');
 var transitionFade = require('./transition-fade');
+var transitionSlide = require('./transition-slide');
 
+function getTransition(transition) {
+    switch (transition) {
+        case 'simple':
+            return transitionSimple;
+            break;
+        case 'fade':
+            return transitionFade;
+            break;
+        case 'slide':
+            return transitionSlide;
+            break;
+        default:
+            return transition;
+    }
+}
 
 /**
  * 3 soļi kuri tiek izpildīti veicot transition
@@ -21,21 +37,29 @@ function viewerTransition(viewer) {
 
     this.viewer = viewer;
 
+    this.transition = {
+        // Transition priekš prev, next metodēm
+        default: null,
+        // Transition priekš swipe (touchscreen)
+        swipe: null
+    }
+
     // Transition. Ja nav definēta, tad izmantojam transitionSimple
     if (viewer.props.transition) {
-        switch (viewer.props.transition) {
-            case 'simple':
-                this.transition = transitionSimple;
-                break;
-            case 'fade':
-                this.transition = transitionFade;
-                break;
-            default:
-                this.transition = viewer.props.transition;
-        }
+        this.transition.default = getTransition(viewer.props.transition);
     }
     else {
-        this.transition = transitionSimple;
+        this.transition.default = transitionSimple;
+    }
+
+    /** 
+     * Swipe gadījumā tiek definēta cita transition
+     */
+    if (viewer.props.transitionSwipe) {
+        this.transition.swipe = getTransition(viewer.props.transitionSwipe);
+    }
+    else {
+        this.transition.swipe = transitionSlide;
     }
 
     this.stepper = new stepper();
@@ -68,12 +92,17 @@ viewerTransition.prototype = _.extend({
         return this;
     },
 
+    setType: function(type) {
+        this.transitionType = type;
+    },
+
     start: function() {
         this.newSlides = {
             next: null,
             prev: null
         }
         this.currentSlide = null;
+        this.transitionType = 'default';
 
         return this;
     },
@@ -89,8 +118,8 @@ viewerTransition.prototype = _.extend({
         this.trigger('start');
 
         this.stepper.run(
-            this.transition.duration,
-            this.transition.easing,
+            this.getTransition().duration,
+            this.getTransition().easing,
 
             _.bind(function(progress){
 
@@ -123,8 +152,8 @@ viewerTransition.prototype = _.extend({
     runFrom: function(direction, progress) {
         this.stepper.runFrom(
             progress,
-            this.transition.duration,
-            this.transition.easing,
+            this.getTransition().duration,
+            this.getTransition().easing,
 
             _.bind(function(progress){
 
@@ -144,7 +173,7 @@ viewerTransition.prototype = _.extend({
      * Izpildām user definētās transition metodes
      */
     executeTransitionMethod: function(method, extraArguments, replaceArguments) {
-        if (this.transition[method]) {
+        if (this.getTransition()[method]) {
 
             // Default argumenti, kuri tiek padoti visām transition metodēm
             var args = [
@@ -161,8 +190,12 @@ viewerTransition.prototype = _.extend({
                 args = replaceArguments;
             }
 
-            this.transition[method].apply(this, args);
+            this.getTransition()[method].apply(this, args);
         }
+    },
+
+    getTransition: function() {
+        return this.transition[this.transitionType];
     }
 }, events);
 

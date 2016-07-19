@@ -83,6 +83,7 @@ viewerSwipe.prototype = {
         }
 
         this.viewer.transition.start();
+        this.viewer.transition.setType('swipe');
         // Uzstādām slaid, no kura tiek veikta transition. Tas ir current slide
         this.viewer.transition.setFrom(this.viewer.slides.active);
         // Uzstādām gan next gan prev, jo nevar zināt kādā virzienā notiks swipe
