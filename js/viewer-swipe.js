@@ -42,12 +42,19 @@ viewerSwipe.prototype = {
     },
 
     onStart: function(ev) {
-        this.dimensions = this.viewer.getDimensions();
+        // Nesākam swipe move, ja notiek transition
+        if (this.viewer.slidesTransitionInProgress) {
+            return;
+        }
 
         this.swipeStarted = true;
         this.swipeProgress = 0;
-
+        this.animationFrameSet = false;
         this.transitionSteppingStarted = false;
+
+        this.viewer.slidesTransitionInProgress = true;
+
+        this.dimensions = this.viewer.getDimensions();
     },
 
     onMove: function(ev) {
@@ -55,11 +62,22 @@ viewerSwipe.prototype = {
             return;
         }
 
+        // Start transition stepping if it is not started
         this.startTransitionStepping();
 
         this.swipeProgress = ev.width / this.dimensions.width;
 
-        this.viewer.transition.step(this.getDirection(ev.direction), this.swipeProgress);
+        if (!this.animationFrameSet) {
+            
+            this.animationFrameSet = true;
+
+            var cb = _.bind(function(){
+                this.viewer.transition.step(this.getDirection(ev.direction), this.swipeProgress);
+                this.animationFrameSet = false;
+            }, this);
+            
+            requestAnimationFrame(cb);
+        }
     },
 
     onEnd: function(ev) {
@@ -67,14 +85,18 @@ viewerSwipe.prototype = {
             return;
         }
 
+        // Pārtraucam swipe
+        this.swipeStarted = false;
+
+        // Turpinam ar animāciju
         var direction = this.getDirection(ev.direction);
 
-        this.viewer.transition.runFrom(direction, this.swipeProgress);
-
-        // Uzstādām jauno slide
-        this.viewer.changeSlide(
-            direction == 'next' ? this.getNext() : this.getPrev()
-        )
+        this.viewer.transition.runFrom(direction, this.swipeProgress, _.bind(function(){
+            // Uzstādām jauno slide
+            this.viewer.changeSlide(
+                direction == 'next' ? this.getNext() : this.getPrev()
+            );
+        }, this));
     },
 
     startTransitionStepping: function() {

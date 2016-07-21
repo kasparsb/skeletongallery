@@ -113,9 +113,7 @@ viewerTransition.prototype = _.extend({
             return;
         }
 
-        this.beforeStepping();
-
-        this.trigger('start');
+        this.beforeStepping();        
 
         this.stepper.run(
             this.getTransition().duration,
@@ -138,6 +136,8 @@ viewerTransition.prototype = _.extend({
     beforeStepping: function() {
         // Šajā mirklī notiek current slide pozicionēšana
         this.executeTransitionMethod('before');
+
+        this.trigger('start');
     },
 
     step: function(direction, progress) {
@@ -149,7 +149,7 @@ viewerTransition.prototype = _.extend({
         this.trigger('end');
     },    
 
-    runFrom: function(direction, progress) {
+    runFrom: function(direction, progress, endCallback) {
         this.stepper.runFrom(
             progress,
             this.getTransition().duration,
@@ -164,6 +164,11 @@ viewerTransition.prototype = _.extend({
             _.bind(function(){
                 
                 this.end(direction)
+
+                // Ja ir padots end callback
+                if (endCallback) {
+                    endCallback();
+                }
 
             }, this)
         );
