@@ -217,12 +217,15 @@ viewer.prototype = _.extend({
             return false;
         }
 
-        // Ja ienāk aktīvais slaids, tad neko nedarām
-        if (this.slides.isActive(newSlide)) {
+        return this.setActiveSlide(newSlide);
+    },
+
+    setActiveSlide: function(slide) {
+        if (this.slides.isActive(slide)) {
             return false;
         }
 
-        this.slides.setActive(newSlide);
+        this.slides.setActive(slide);
 
         return true;
     },

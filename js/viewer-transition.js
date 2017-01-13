@@ -162,14 +162,14 @@ viewerTransition.prototype = _.extend({
             }, this),
 
             _.bind(function(){
-                
+
                 this.end(direction)
 
                 // Ja ir padots end callback
                 if (endCallback) {
                     endCallback();
                 }
-
+                
             }, this)
         );
     },

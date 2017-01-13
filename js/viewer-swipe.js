@@ -29,6 +29,8 @@ viewerSwipe.prototype = {
         this.swipe.on('start', _.bind(this.onStart, this));
         this.swipe.on('move', _.bind(this.onMove, this));
         this.swipe.on('end', _.bind(this.onEnd, this));
+        // Arī, ja nav bijis valid move piefiksējam, ka touch notikumi beigušies
+        this.swipe.on('touchend', _.bind(this.onTouchEnd, this));
     },
 
     initSwipe: function() {
@@ -47,12 +49,12 @@ viewerSwipe.prototype = {
             return;
         }
 
+        this._wasMove = false;
+
         this.swipeStarted = true;
         this.swipeProgress = 0;
-        this.animationFrameSet = false;
+        this.animationFrameId = 0;
         this.transitionSteppingStarted = false;
-
-        this.viewer.slidesTransitionInProgress = true;
 
         this.dimensions = this.viewer.getDimensions();
     },
@@ -62,21 +64,22 @@ viewerSwipe.prototype = {
             return;
         }
 
+        var direction = ev.direction;
+
+        this._wasMove = true;
+
         // Start transition stepping if it is not started
         this.startTransitionStepping();
 
         this.swipeProgress = ev.width / this.dimensions.width;
 
-        if (!this.animationFrameSet) {
-            
-            this.animationFrameSet = true;
+        if (!this.animationFrameId) {
+            this.animationFrameId = requestAnimationFrame(_.bind(function(){
+                
+                this.viewer.transition.step(this.getDirection(direction), this.swipeProgress);
+                this.animationFrameId = 0;
 
-            var cb = _.bind(function(){
-                this.viewer.transition.step(this.getDirection(ev.direction), this.swipeProgress);
-                this.animationFrameSet = false;
-            }, this);
-            
-            requestAnimationFrame(cb);
+            }, this));
         }
     },
 
@@ -84,19 +87,23 @@ viewerSwipe.prototype = {
         if (!this.swipeStarted) {
             return;
         }
+        if (!this._wasMove) {
+            return;
+        }
 
-        // Pārtraucam swipe
-        this.swipeStarted = false;
-
-        // Turpinam ar animāciju
+        // Turpinām ar animāciju
         var direction = this.getDirection(ev.direction);
 
-        this.viewer.transition.runFrom(direction, this.swipeProgress, _.bind(function(){
-            // Uzstādām jauno slide
-            this.viewer.changeSlide(
-                direction == 'next' ? this.getNext() : this.getPrev()
-            );
-        }, this));
+        // Uzstādām jauno slide
+        this.viewer.setActiveSlide(direction == 'next' ? this.getNext() : this.getPrev());
+
+        // Taisam animāciju
+        this.viewer.transition.runFrom(direction, this.swipeProgress);
+    },
+
+    onTouchEnd: function() {
+        this.swipeStarted = false;
+        this._wasMove = false;
     },
 
     startTransitionStepping: function() {

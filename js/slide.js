@@ -297,8 +297,6 @@ slide.prototype = _.extend({
             p.maxHeight = p.maxHeight ? p.maxHeight : '';
             p.minWidth = '';
             p.minHeight = '';
-
-            //console.log(p.width, p.height, this.media.natural, this.props.src);
         }
         
         return p;
