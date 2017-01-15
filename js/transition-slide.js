@@ -1,5 +1,10 @@
 var TransitionSlide = {
-    duration: 400,
+    duration: 1100,
+    easing: [.2,0,.2,1],
+
+    init: function(viewer) {
+        
+    },
 
     before: function(viewer, currentSlide, newSlides) {
         currentSlide.css({
@@ -13,7 +18,6 @@ var TransitionSlide = {
          * @todo Slide mount ir jādara viewer pašam
          */
 
-
         var dimensions = this.viewer.getDimensions();
         /**
          * Šajā mirklī nezinam, kurā virzienā notiks transition
@@ -23,6 +27,7 @@ var TransitionSlide = {
             viewer.mountSlide(newSlides.next);
 
             newSlides.next.css({
+                'will-change': 'transform',
                 position: 'absolute',
                 top: 0,
                 left: 0,
@@ -33,6 +38,7 @@ var TransitionSlide = {
             viewer.mountSlide(newSlides.prev);
 
             newSlides.prev.css({
+                'will-change': 'transform',
                 position: 'absolute',
                 top: 0,
                 left: 0,
@@ -70,9 +76,15 @@ var TransitionSlide = {
 
     step: function(viewer, currentSlide, newSlides, direction, progress) {
         var dimensions = this.viewer.getDimensions();
+        var d = dimensions.width * progress;
+
+        
+        // log('step', Math.round(this._prevD ? d - this._prevD : ''));
+        // this._prevD = d;
+
+
 
         if (direction == 'next') {
-            var d = (dimensions.width * progress);    
             
             newSlides[direction].css({
                 transform: 'translate3d('+(dimensions.width - d)+'px,0,0)'
@@ -84,7 +96,6 @@ var TransitionSlide = {
             });
         }
         else if (direction == 'prev') {
-            var d = (dimensions.width * progress);
             
             newSlides[direction].css({
                 transform: 'translate3d(-'+(dimensions.width - d)+'px,0,0)'

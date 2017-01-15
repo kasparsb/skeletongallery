@@ -48,7 +48,7 @@ viewerSwipe.prototype = {
         if (this.viewer.slidesTransitionInProgress) {
             return;
         }
-
+        
         this._wasMove = false;
 
         this.swipeStarted = true;

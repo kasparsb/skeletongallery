@@ -113,9 +113,11 @@ viewer.prototype = _.extend({
     /**
      * Montējam slide, lai tas būt ievietots DOMā
      * Montējot slide notiek media ielāde, ja tā vēl nav ielādēta
+     * @param object Slide
+     * @param object Optional target. If not provided then mount into viewer
      */
-    mountSlide: function(slide) {
-        slide.mount(this.el);
+    mountSlide: function(slide, target) {
+        slide.mount(target ? target : this.el);
     },
 
     unmountSlide: function(slide) {

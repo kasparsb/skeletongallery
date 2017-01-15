@@ -62,6 +62,15 @@ function viewerTransition(viewer) {
         this.transition.swipe = transitionSlide;
     }
 
+    // Run transitions init methods
+    for (var t in this.transition) {
+        if (this.transition.hasOwnProperty(t)) {
+            if (this.transition[t].init) {
+                this.transition[t].init(this.viewer);
+            }
+        }
+    }
+
     this.stepper = new stepper();
 }
 

@@ -2,12 +2,7 @@ var Bezier = require('./bezier2.js');
 
 var Stepper = function() {
     this.defaultBezierCurve = [0,0,1,1];
-    /**
-     * Frames per second
-     */
-    this.fps = 60;
-    this.interval = 1000 / this.fps;
-    this.precision = 100000;
+    this.precision = 10000000;
     this.progress = 0;
     this.current = 0;
 }
@@ -41,6 +36,8 @@ Stepper.prototype = {
         this.startTime -= (duration * progress);
         this.progress = progress;
 
+        //log('stepper.runFrom.startTime', this.startTime);
+
         this.step();
     },
 
@@ -49,7 +46,7 @@ Stepper.prototype = {
      */
     start: function() {
         this.startTime = +new Date();
-        this.progress = 0;        
+        this.progress = 0;
     },
 
     done: function() {
@@ -59,18 +56,22 @@ Stepper.prototype = {
     step: function() {
         var mthis = this;
 
+
+        // if (this._prevTime) {
+        //     log('stepper.step', Math.round(window.performance.now() - this._prevTime));
+        // }
+        // this._prevTime = window.performance.now();
+
+
         mthis.trackProgress();
 
         if (this.current < this.startTime + this.duration) {
 
             this.stepCallback(this.progress);
 
-            var cb = function(){
+            requestAnimationFrame(function(){
                 mthis.step()
-            }
-
-            requestAnimationFrame(cb);
-            //setTimeout(cb, this.interval);
+            });
         }
         else {
             this.stepCallback(1);
