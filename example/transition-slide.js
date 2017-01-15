@@ -3,26 +3,26 @@ var TransitionSlide = {
     
     easing: [.4,1.44,.38,.34],
 
-    before: function(oldSlide, newSlide, direction, viewer) {
+    before: function(viewer, currentSlide, newSlides, direction) {
         this.dimensions = viewer.getDimensions();
 
         this.width = this.dimensions.width;
         this.height = this.dimensions.height;
 
-        viewer.mountSlide(newSlide);
+        viewer.mountSlide(newSlides[direction]);
 
 
         var newx = this.width * (direction == 'next' ? 1 : -1);
 
-        
-        if (oldSlide && newSlide) {
+        var newSlide = newSlides[direction];
+        if (currentSlide && newSlide) {
             $(newSlide.el).css({
                 position: 'absolute',
                 top: 0,
                 left: 0,
                 transform: 'translate3d('+newx+'px, 0, 0)'
             })
-            $(oldSlide.el).css({
+            $(currentSlide.el).css({
                 position: 'absolute',
                 top: 0,
                 left: 0,
@@ -31,23 +31,21 @@ var TransitionSlide = {
         }
         
     },
-    after: function(oldSlide, newSlide, direction, viewer) {
-        if (oldSlide) {
-            viewer.unmountSlide(oldSlide);
-        }
+    after: function(viewer, currentSlide, newSlide, direction) {
+        viewer.unmountSlide(currentSlide);
     },
-    step: function(oldSlide, newSlide, direction, progress, viewer) {
-        if (oldSlide && newSlide) {
+    step: function(viewer, currentSlide, newSlides, direction, progress) {
+        if (currentSlide && newSlide) {
             
             
             var newx = (this.width - this.width * progress) * (direction == 'next' ? 1 : -1);
             var oldx = (this.width * progress) * (direction == 'next' ? -1 : 1);
             
-
+            var newSlide = newSlides[direction];
             $(newSlide.el).css({
                 transform: 'translate3d('+newx+'px, 0, 0)'
             });
-            $(oldSlide.el).css({
+            $(currentSlide.el).css({
                 transform: 'translate3d('+oldx+'px, 0, 0)'
             })
         }

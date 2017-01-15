@@ -1,3 +1,12 @@
+var $log = $('.log');
+function log() {
+    var a = Array.prototype.slice.call(arguments);
+    console.log('step', a);
+    $log.append('<div>'+a.join(' ')+'</div>')
+}
+
+
+
 var V = new window.webit.skeletonGallery.viewer(
     // Viewer props
     {
@@ -7,10 +16,13 @@ var V = new window.webit.skeletonGallery.viewer(
         handleWindowResize: true,
         checkSlidesTransitionInProgress: true,
         slideDefault: {
-            size: 'fit'
+            size: 'cover',
+            verticalAlign: 'center',
+            horizontalAlign: 'center'
         },
 
-        //transition: TransitionSlide3d
+        //transition: TransitionSlide
+        transition: 'fade'
 
         
         // Default vērtības, kuras tiek izmantotas, ja item'am tāds nav norādītas
@@ -27,7 +39,7 @@ var V = new window.webit.skeletonGallery.viewer(
     [
         // Image var būt kā strings (url uz bildi) vai kā objekts, kurā norāda
         // netikai bildes url, bet arī vēlamos izmērus
-        'http://www.la.lv/wp-content/uploads/2016/02/3dukuri-664x996.jpg',
+        //'http://www.la.lv/wp-content/uploads/2016/02/3dukuri-664x996.jpg',
         'https://farm1.staticflickr.com/323/18519058198_ee3de56d05_k.jpg',
         'https://farm7.staticflickr.com/6226/6365397157_178f833cf9_b.jpg',
         {

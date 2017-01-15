@@ -1,82 +1,98 @@
 <!DOCTYPE html>
 <html lang="lv-LV">
 <head>
-	<meta charset="UTF-8" />
-	<style>
-		body, html {
-			height: 100%;
-		}
-		body {
-			padding: 0;
-			margin: 0;
-		}
-		#g {
-			width: 97%;
-			height: 60%;
-			margin: 0 auto;
-			border: 1px solid green;
-			background: #000;
-		}
-		.slide {
-			background-repeat: no-repeat;
-			background-position: center center;
-		}
-		.slide-loading {
-			background-image: url('ajax-loader.gif');
-		}
+    <meta charset="UTF-8" />
+    <style>
+        body, html {
+            height: 100%;
+        }
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        #g,
+        .controls {
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #g {
+            height: 400px;
+            background: #000;
+            margin-top: 20px;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        .slide-loading {
+            background-image: url('ajax-loader.gif');
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .controls {
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        .controls a {
+            text-decoration: none;
+            display: block;
+            height: 20px;
+            line-height: 20px;
+            float: left;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        .controls a:first-child {
+            margin-left: 0;
+        }
+        .reload {
+            font-weight: bold;
+            color: #9C9C9C;
+        }
+        .nav {
+            width: 20px;
+            overflow: hidden;
+            text-indent: -100px;
+            position: relative;
+        }
+        .nav:after {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
 
-		.slide-0 {
-			background-color: pink;
-			position: relative;
-		}
-		.slide-1 {
-			background-color: green;
-			position: relative;
-		}
-		.slide-2 {
-			background-color: red;
-		}
-
-
-		.slide-0:after {
-			content: '0';
-			position: absolute;
-			top: 10px;
-			left: 10px;
-			font-size: 36px
-		}
-		.slide-1:after {
-			content: '1';
-			position: absolute;
-			top: 10px;
-			left: 10px;
-			font-size: 36px
-		}
-	</style>
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
+        .nav-prev:after {
+            border-width: 10px 20px 10px 0;
+            border-color: transparent #9C9C9C transparent transparent;
+        }
+        .nav-next:after {
+            border-width: 10px 0 10px 20px;
+            border-color: transparent transparent transparent #9C9C9C;
+        }
+    </style>
 </head>
 <body>
 
-	<div id="t"></div>
-	<div id="g"></div>
-	<a href="">Reload</a>
-	<a id="gprev" href="">Prev</a>
-	<a id="gnext" href="">Next</a>
+    
+    <div id="g"></div>
+    <div class="controls">
+        <a class="reload">Reload</a>
+        <a id="gprev" class="nav nav-prev">Prev</a>
+        <a id="gnext" class="nav nav-next">Next</a>        
+    </div>
+    <div class="log"></div>
+    
+    
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="../build/skeletongallery.min.js"></script>
 
-	<div style="margin-top:20px">
-		<button id="startransitionstepping">StartTransitionStepping</button>
-		<input id="steppingprogress" type="number" step="0.1" value="0" />
-	</div>
-
-	<div style="margin-top:20px">
-		<button id="replace-items">Replace items</buttons>
-	</div>
-	
-	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-	<script src="../build/skeletongallery.min.js"></script>
-
-	<script src="./transition-slide.js"></script>
-	<script src="./transition-slide3d.js"></script>
-	
-	<script src="./app.js"></script>
+    <script src="./transition-slide.js"></script>
+    <script src="./transition-slide3d.js"></script>
+    
+    <script src="./app.js"></script>
 </body>
 </html>
