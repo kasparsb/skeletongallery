@@ -1,4 +1,4 @@
-var _ = require('underscore');
+var _ = require('underscore2');
 _.jQuery(jQuery);
 
 module.exports = {

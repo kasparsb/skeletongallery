@@ -26,7 +26,7 @@
     "vinyl-source-stream": "^1.1.0",
     "vinyl-buffer": "^1.0.0",
 
-    "underscore": "git+https://github.com/kasparsb/underscore.git",
+    "underscore2": "git+https://github.com/kasparsb/underscore.git",
     "swipe": "git+https://github.com/kasparsb/swipe.git"
   }
 }

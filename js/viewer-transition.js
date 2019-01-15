@@ -1,4 +1,4 @@
-var _ = require('underscore');
+var _ = require('underscore2');
 var events = require('./events');
 var stepper = require('./stepper');
 var transitionSimple = require('./transition-simple');

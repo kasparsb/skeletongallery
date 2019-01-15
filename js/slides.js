@@ -1,4 +1,4 @@
-var _ = require('underscore');
+var _ = require('underscore2');
 var events = require('./events');
 var slide = require('./slide');
 var mediaImage = require('./media-image');
