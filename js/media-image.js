@@ -1,4 +1,4 @@
-var _ = require('underscore2');
+var _ = require('./underscore');
 var media = require('./media');
 
 var mediaImage = function(props) {

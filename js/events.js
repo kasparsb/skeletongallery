@@ -1,4 +1,4 @@
-var _ = require('underscore2');
+var _ = require('./underscore');
 
 /**
  * Vienots callback reģistrs visiem objektiem

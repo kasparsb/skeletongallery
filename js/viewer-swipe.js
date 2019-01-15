@@ -1,4 +1,4 @@
-var _ = require('underscore2');
+var _ = require('./underscore');
 var swipe = require('swipe');
 
 function viewerSwipe(viewer) {
